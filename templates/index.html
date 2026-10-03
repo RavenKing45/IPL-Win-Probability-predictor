@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IPL Win Probability Predictor</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <header>
+            <p class="eyebrow">MACHINE LEARNING PROJECT</p>
+            <h1>IPL Win Probability Predictor</h1>
+            <p class="subtitle">
+                Predict the chasing team's probability of winning based on the
+                current match situation.
+            </p>
+        </header>
+
+
+        <section class="card">
+
+            <div class="team-row">
+
+                <div class="field">
+                    <label for="batting-team">Batting Team</label>
+
+                    <select id="batting-team">
+                        <option value="CSK">Chennai Super Kings</option>
+                        <option value="DC">Delhi Capitals</option>
+                        <option value="KKR">Kolkata Knight Riders</option>
+                        <option value="MI">Mumbai Indians</option>
+                        <option value="PBKS">Punjab Kings</option>
+                        <option value="RR">Rajasthan Royals</option>
+                        <option value="RCB">Royal Challengers Bengaluru</option>
+                        <option value="SRH">Sunrisers Hyderabad</option>
+                        <option value="GT">Gujarat Titans</option>
+                        <option value="LSG">Lucknow Super Giants</option>
+                    </select>
+                </div>
+
+
+                <div class="vs">
+                    VS
+                </div>
+
+
+                <div class="field">
+                    <label for="bowling-team">Bowling Team</label>
+
+                    <select id="bowling-team">
+                        <option value="MI">Mumbai Indians</option>
+                        <option value="CSK">Chennai Super Kings</option>
+                        <option value="DC">Delhi Capitals</option>
+                        <option value="KKR">Kolkata Knight Riders</option>
+                        <option value="PBKS">Punjab Kings</option>
+                        <option value="RR">Rajasthan Royals</option>
+                        <option value="RCB">Royal Challengers Bengaluru</option>
+                        <option value="SRH">Sunrisers Hyderabad</option>
+                        <option value="GT">Gujarat Titans</option>
+                        <option value="LSG">Lucknow Super Giants</option>
+                    </select>
+                </div>
+
+            </div>
+
+
+            <div class="grid">
+
+                <div class="field">
+                    <label for="target">Target Runs</label>
+                    <input
+                        type="number"
+                        id="target"
+                        min="1"
+                        placeholder="180"
+                    >
+                </div>
+
+
+                <div class="field">
+                    <label for="score">Current Score</label>
+                    <input
+                        type="number"
+                        id="score"
+                        min="0"
+                        placeholder="80"
+                    >
+                </div>
+
+
+                <div class="field">
+                    <label for="overs">Overs Completed</label>
+                    <input
+                        type="number"
+                        id="overs"
+                        min="0"
+                        max="20"
+                        step="0.1"
+                        placeholder="10.0"
+                    >
+                    <small>Example: 10.3 = 10 overs + 3 balls</small>
+                </div>
+
+
+                <div class="field">
+                    <label for="wickets">Wickets Lost</label>
+                    <input
+                        type="number"
+                        id="wickets"
+                        min="0"
+                        max="10"
+                        placeholder="3"
+                    >
+                </div>
+
+
+                <div class="field">
+                    <label for="runs-last-30">Runs in Last 30 Balls</label>
+                    <input
+                        type="number"
+                        id="runs-last-30"
+                        min="0"
+                        placeholder="45"
+                    >
+                </div>
+
+
+                <div class="field">
+                    <label for="wickets-last-30">Wickets in Last 30 Balls</label>
+                    <input
+                        type="number"
+                        id="wickets-last-30"
+                        min="0"
+                        max="10"
+                        placeholder="1"
+                    >
+                </div>
+
+            </div>
+
+
+            <button id="predict-btn">
+                Calculate Win Probability
+            </button>
+
+            <p id="error"></p>
+
+        </section>
+
+
+        <section id="result" class="result-card hidden">
+
+            <p class="result-label">CHASING TEAM WIN PROBABILITY</p>
+
+            <div id="probability">--%</div>
+
+            <div class="probability-bar">
+                <div id="probability-fill"></div>
+            </div>
+
+            <div class="result-details">
+
+                <div>
+                    <span>Win</span>
+                    <strong id="win-probability">--%</strong>
+                </div>
+
+                <div>
+                    <span>Loss</span>
+                    <strong id="loss-probability">--%</strong>
+                </div>
+
+            </div>
+
+
+            <div class="match-stats">
+
+                <div>
+                    <span>Runs Left</span>
+                    <strong id="runs-left">--</strong>
+                </div>
+
+                <div>
+                    <span>Required Rate</span>
+                    <strong id="rrr">--</strong>
+                </div>
+
+                <div>
+                    <span>Current Rate</span>
+                    <strong id="crr">--</strong>
+                </div>
+
+                <div>
+                    <span>Wickets Left</span>
+                    <strong id="wickets-left">--</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+            Built with Python · Flask · Scikit-learn · Logistic Regression
+        </footer>
+
+    </main>
+
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

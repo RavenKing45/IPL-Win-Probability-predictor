@@ -1,0 +1,225 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0b0f19;
+    color: #f4f7fb;
+    min-height: 100vh;
+}
+
+.container {
+    width: min(900px, 92%);
+    margin: 0 auto;
+    padding: 60px 0;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.eyebrow {
+    font-size: 12px;
+    letter-spacing: 3px;
+    opacity: 0.6;
+    margin-bottom: 12px;
+}
+
+h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    margin-bottom: 12px;
+}
+
+.subtitle {
+    color: #9da7b8;
+    max-width: 600px;
+    margin: auto;
+    line-height: 1.6;
+}
+
+.card,
+.result-card {
+    background: #121826;
+    border: 1px solid #222c3d;
+    border-radius: 18px;
+    padding: 30px;
+}
+
+.team-row {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    align-items: end;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.vs {
+    text-align: center;
+    padding-bottom: 12px;
+    color: #8e99aa;
+    font-weight: bold;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-size: 14px;
+    color: #b8c1d1;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 10px;
+    border: 1px solid #303b4f;
+    background: #0c111c;
+    color: white;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: #65738a;
+}
+
+small {
+    color: #737f92;
+    font-size: 11px;
+}
+
+button {
+    width: 100%;
+    margin-top: 28px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: #f4f7fb;
+    color: #0b0f19;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+#error {
+    color: #ff7d7d;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.result-card {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.result-label {
+    color: #8f9aad;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+#probability {
+    font-size: 64px;
+    font-weight: bold;
+    margin: 15px 0 20px;
+}
+
+.probability-bar {
+    height: 12px;
+    background: #252f40;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#probability-fill {
+    height: 100%;
+    width: 0%;
+    background: #f4f7fb;
+    transition: width 0.7s ease;
+}
+
+.result-details,
+.match-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.result-details div,
+.match-stats div {
+    background: #0c111c;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.result-details span,
+.match-stats span {
+    display: block;
+    color: #7f8a9d;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.result-details strong,
+.match-stats strong {
+    font-size: 18px;
+}
+
+footer {
+    text-align: center;
+    color: #626e82;
+    font-size: 12px;
+    margin-top: 30px;
+}
+
+@media (max-width: 650px) {
+
+    .container {
+        padding: 30px 0;
+    }
+
+    .team-row {
+        grid-template-columns: 1fr;
+    }
+
+    .vs {
+        padding: 0;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    #probability {
+        font-size: 48px;
+    }
+}
