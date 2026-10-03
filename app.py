@@ -31,7 +31,11 @@ model = joblib.load(MODEL_PATH)
 
 BASE_DIR = Path(__file__).resolve().parent
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder="public",
+    static_url_path=""
+)
 
 
 # --------------------------------------------------
