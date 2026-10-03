@@ -1,23 +1,60 @@
-# IPL Win Probability Predictor
+# 🏏 IPL Win Probability Predictor
 
-A machine learning project that estimates the probability of the **chasing team winning an IPL match** from the current state of the chase.
+An end-to-end Machine Learning project that estimates the probability of the **chasing team winning an IPL match** from the current state of the chase.
 
-The project focuses on transforming raw IPL match-level and ball-by-ball data into a model-ready dataset. Each training row represents a snapshot of a chase after a delivery. The modelling pipeline is designed to be extended with additional algorithms and feature-engineering experiments.
+The project transforms raw IPL match-level and ball-by-ball data into a delivery-level, model-ready dataset, trains classification models, and exposes the trained prediction pipeline through a Flask web application deployed on Vercel.
 
-## Project Goal
+## 🚀 Live Demo
 
-The objective is to predict the outcome of an ongoing IPL chase using the information available at that point in the match, rather than only using final match-level information.
+**[Try the IPL Win Probability Predictor](https://ipl-win-probability-predictor-theta.vercel.app/)**
 
-### Current Models
+---
 
-- Logistic Regression
-- Support Vector Machine (SVM)
+## 📌 Project Goal
 
-The project is **not limited to these models**. Additional algorithms and experiments will be added as development continues.
+The objective is to estimate the probability of the chasing team winning at a given point in the second innings.
 
-## Data Engineering Approach
+Instead of predicting only from final match-level information, each modelling row represents a **snapshot of an ongoing chase after a delivery**.
 
-The raw data is split into two main sources:
+The model uses the information available at that point — such as the target, runs remaining, required run rate, wickets remaining, and recent scoring momentum — to estimate the eventual outcome.
+
+---
+
+## 🧠 Machine Learning Approach
+
+### Current Model
+
+The currently deployed model is:
+
+**Logistic Regression**
+
+The model is implemented as a scikit-learn pipeline and serialized using `joblib`.
+
+The project has also included **Support Vector Machine (SVM)** experimentation, while the deployed application currently uses the Logistic Regression pipeline.
+
+```text
+Raw IPL Data
+     ↓
+Data Cleaning
+     ↓
+Feature Engineering
+     ↓
+Delivery-level Chase States
+     ↓
+Logistic Regression Pipeline
+     ↓
+Predicted Probability
+     ↓
+Web Application
+```
+
+The model uses `predict_proba()` to return a probability rather than only a binary win/loss prediction.
+
+---
+
+## 📊 Dataset Construction
+
+The raw data is divided into two main sources.
 
 ### Match-level data
 
@@ -51,7 +88,9 @@ Contains delivery-level information such as:
 
 The two datasets are combined to construct a delivery-level chase-state dataset.
 
-## Feature Engineering Pipeline
+---
+
+## 🛠️ Feature Engineering Pipeline
 
 ### 1. Calculate the first-innings score
 
@@ -122,7 +161,9 @@ This gives:
 - `1` → the chasing team eventually won
 - `0` → the chasing team eventually lost
 
-## Data Cleaning
+---
+
+## 🧹 Data Cleaning
 
 Before model training, the dataset is cleaned to keep the training examples consistent with the assumptions of the predictor.
 
@@ -141,54 +182,278 @@ The preprocessing includes:
 
 These steps are important because the model should only see states that represent a meaningful **ongoing normal chase**.
 
-## Final Dataset
+---
 
-The final dataset combines static match information with dynamic chase-state features.
+## 📈 Final Modelling Dataset
 
-A typical row represents a state similar to:
+The processed modelling dataset currently contains:
+
+**117,558 observations and 17 columns.**
+
+The final deployed Logistic Regression model uses these 8 match-state features:
+
+| Feature | Description |
+|---|---|
+| `target_runs` | Target score set by the first innings |
+| `runs_left` | Runs still required to win |
+| `CRR` | Current Run Rate |
+| `balls_left` | Legal deliveries remaining |
+| `RRR` | Required Run Rate |
+| `wickets_left` | Wickets remaining |
+| `runs_last_30` | Runs scored in the previous 30 legal deliveries |
+| `wickets_last_30` | Wickets lost in the previous 30 legal deliveries |
+
+A typical prediction state can therefore look like:
 
 | Feature | Example |
 |---|---:|
-| Current Score | 121 |
-| Runs Left | 62 |
-| Wickets Lost | 3 |
-| Balls Left | 38 |
-| CRR | 8.8 |
-| RRR | 9.8 |
-| Runs Last 30 | 43 |
+| Target Runs | 180 |
+| Runs Left | 100 |
+| Wickets Left | 7 |
+| Balls Left | 60 |
+| CRR | 8.0 |
+| RRR | 10.0 |
+| Runs Last 30 | 45 |
 | Wickets Last 30 | 1 |
-| Batting Team | Team A |
-| Bowling Team | Team B |
 
-The target indicates whether the batting/chasing team eventually won that match.
+The model learns the relationship between these match states and the eventual outcome.
 
-The model therefore learns from **match state → eventual outcome**, allowing the system to estimate win probability during the chase.
+---
 
-## Machine Learning
+## 📈 Model Performance
 
-### Logistic Regression
+The current Logistic Regression model achieved:
 
-Used as a classification baseline and to estimate the probability of the chasing team winning from the engineered features.
+| Metric | Score |
+|---|---:|
+| Training Accuracy | 78.62% |
+| Test Accuracy | 78.08% |
 
-### Support Vector Machine
+The test accuracy is measured on a held-out test set.
 
-Used as an additional classification approach so its performance can be compared with the Logistic Regression baseline.
+Because the application produces probabilities, future evaluation can additionally include probability-oriented metrics such as:
 
-Further models, preprocessing strategies, feature engineering, tuning, and evaluation methods can be added as the project develops.
+- ROC-AUC
+- Log Loss
+- Probability calibration
 
-## Future Work
+---
 
-Planned / possible extensions include:
+## 🌐 Web Application & API
 
-- additional classification algorithms
-- hyperparameter tuning
-- feature selection and engineering
-- probability calibration
-- model evaluation and comparison
-- interpretability / feature analysis
-- stronger momentum features
-- deployment as an interactive prediction application
+The trained model is exposed through a Flask application.
 
-## Project Status
+```text
+                    User
+                      │
+                      ▼
+              Web Application
+                      │
+                      ▼
+                   Flask
+                 /api/predict
+                      │
+                      ▼
+        Logistic Regression Pipeline
+                      │
+                      ▼
+              Win Probability
+```
 
-This project is actively being developed. The current focus is on building a robust ball-by-ball data-engineering pipeline and experimenting with machine-learning approaches for IPL win-probability prediction.
+### API Endpoint
+
+The prediction endpoint accepts the current match state as JSON.
+
+Example request:
+
+```json
+{
+  "target_runs": 180,
+  "current_score": 80,
+  "overs_completed": 10,
+  "wickets_lost": 3,
+  "runs_last_30": 45,
+  "wickets_last_30": 1
+}
+```
+
+Example response:
+
+```json
+{
+  "win_probability": 40.85,
+  "loss_probability": 59.15
+}
+```
+
+The frontend converts the user's match-state inputs into the required model features and displays the resulting probabilities.
+
+---
+
+## ☁️ Deployment
+
+The application is deployed using **Vercel**.
+
+The deployment workflow is:
+
+```text
+Model Training
+      ↓
+.joblib Model
+      ↓
+Flask API
+      ↓
+GitHub
+      ↓
+Vercel
+      ↓
+Live Web Application
+```
+
+The trained model artifact is stored in:
+
+```text
+models/logistic_regression_pipeline.joblib
+```
+
+The raw and processed datasets are excluded from the repository through `.gitignore`, while the trained model is retained because it is required for production inference.
+
+---
+
+## 💻 Tech Stack
+
+### Machine Learning
+
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- Logistic Regression
+- Support Vector Machine
+- Joblib
+
+### Web Application
+
+- Flask
+- HTML
+- CSS
+- JavaScript
+
+### Development & Deployment
+
+- uv
+- Git
+- GitHub
+- Vercel
+
+---
+
+## 📁 Project Structure
+
+```text
+IPL-Win-Probability-predictor/
+│
+├── app.py                         # Flask application and API
+│
+├── data/
+│   ├── raw/                       # Raw datasets (not tracked)
+│   └── processed/                 # Processed datasets (not tracked)
+│
+├── models/
+│   └── logistic_regression_pipeline.joblib
+│
+├── notebooks/                     # Exploratory analysis and experimentation
+├── reports/                       # Analysis and results
+│
+├── src/
+│   ├── train_model.py             # Model training
+│   └── test_model.py              # Model inference testing
+│
+├── public/
+│   ├── style.css                  # Frontend styling
+│   └── script.js                  # Frontend logic
+│
+├── templates/
+│   └── index.html                 # Web interface
+│
+├── .gitignore
+├── pyproject.toml
+├── requirements.txt
+├── uv.lock
+└── README.md
+```
+
+---
+
+## ⚙️ Running Locally
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/RavenKing45/IPL-Win-Probability-predictor.git
+cd IPL-Win-Probability-predictor
+```
+
+### 2. Install dependencies
+
+Using `uv`:
+
+```bash
+uv sync
+```
+
+### 3. Start the Flask application
+
+```bash
+uv run flask --app app run
+```
+
+The application will be available at:
+
+```text
+http://127.0.0.1:5000
+```
+
+---
+
+## 🔄 Retraining the Model
+
+The model can be retrained using:
+
+```bash
+uv run python src/train_model.py
+```
+
+The trained pipeline is saved to:
+
+```text
+models/logistic_regression_pipeline.joblib
+```
+
+After retraining, the updated model can be committed and pushed to GitHub. Vercel will automatically create a new deployment.
+
+---
+
+## 🔮 Future Improvements
+
+Potential improvements include:
+
+- Probability calibration
+- ROC-AUC and log-loss evaluation
+- Match-wise train/test splitting to reduce potential match-level leakage
+- Comparison with tree-based models such as Random Forest, XGBoost, and CatBoost
+- Improved handling of DLS/rain-affected matches
+- More extensive hyperparameter tuning
+- Feature selection and additional momentum features
+- Win-probability visualization throughout an innings
+- Real-time match data integration
+- More extensive validation across IPL seasons
+- Model interpretability and feature analysis
+
+---
+
+## 👨‍💻 Author
+
+**Raven King**
+
+B.Tech — Data Science & AI

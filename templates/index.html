@@ -2,218 +2,241 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="IPL Win Probability Predictor">
     <title>IPL Win Probability Predictor</title>
 
-    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
+    <div class="page-shell">
+        <div class="app-frame">
 
-    <main class="container">
-
-        <header>
-            <p class="eyebrow">MACHINE LEARNING PROJECT</p>
-            <h1>IPL Win Probability Predictor</h1>
-            <p class="subtitle">
-                Predict the chasing team's probability of winning based on the
-                current match situation.
-            </p>
-        </header>
-
-
-        <section class="card">
-
-            <div class="team-row">
-
-                <div class="field">
-                    <label for="batting-team">Batting Team</label>
-
-                    <select id="batting-team">
-                        <option value="CSK">Chennai Super Kings</option>
-                        <option value="DC">Delhi Capitals</option>
-                        <option value="KKR">Kolkata Knight Riders</option>
-                        <option value="MI">Mumbai Indians</option>
-                        <option value="PBKS">Punjab Kings</option>
-                        <option value="RR">Rajasthan Royals</option>
-                        <option value="RCB">Royal Challengers Bengaluru</option>
-                        <option value="SRH">Sunrisers Hyderabad</option>
-                        <option value="GT">Gujarat Titans</option>
-                        <option value="LSG">Lucknow Super Giants</option>
-                    </select>
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="brand">
+                    <span class="brand-mark" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                    <span>IPL Predictor</span>
                 </div>
 
+                <nav class="nav" aria-label="Primary">
+                    <a class="nav-link active" href="#predictor">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 12a8 8 0 1 0 8-8v8H4Z"></path>
+                        </svg>
+                        <span>Predictor</span>
+                    </a>
 
-                <div class="vs">
-                    VS
+                    <a class="nav-link" href="#model">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 3 19 7v10l-7 4-7-4V7l7-4Z"></path>
+                            <path d="m8.5 9.5 3.5 2 3.5-2M12 11.5V17"></path>
+                        </svg>
+                        <span>Model</span>
+                    </a>
+
+                    <a class="nav-link" href="#about">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M12 10v6M12 7h.01"></path>
+                        </svg>
+                        <span>About</span>
+                    </a>
+                </nav>
+
+                <div class="analyst-card">
+                    <div class="avatar" aria-hidden="true">RK</div>
+                    <div>
+                        <strong>Raven King</strong>
+                        <span>B.Tech DSAI</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main -->
+            <main class="content" id="predictor">
+                <header class="page-header">
+                    <div>
+                        <h1>IPL Win Probability Predictor</h1>
+                        <p>Estimate the probability of the chasing team winning an IPL match.</p>
+                    </div>
+                </header>
+
+                <section class="top-grid">
+                    <!-- Match situation -->
+                    <section class="card situation-card" aria-labelledby="situation-title">
+                        <h2 id="situation-title">Match situation</h2>
+
+                        <div class="fields">
+                            <div class="field">
+                                <label for="targetRuns">Target runs</label>
+                                <input id="targetRuns" type="number" value="180" min="1" step="1" inputmode="numeric">
+                            </div>
+
+                            <div class="field">
+                                <label for="currentScore">Current score</label>
+                                <input id="currentScore" type="number" value="80" min="0" step="1" inputmode="numeric">
+                            </div>
+
+                            <div class="field">
+                                <label for="oversCompleted">Overs completed</label>
+                                <input id="oversCompleted" type="number" value="10.0" min="0.1" max="19.5" step="0.1" inputmode="decimal">
+                            </div>
+
+                            <div class="field">
+                                <label for="wicketsLost">Wickets lost</label>
+                                <input id="wicketsLost" type="number" value="3" min="0" max="10" step="1" inputmode="numeric">
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <h3>Recent form</h3>
+
+                        <div class="fields">
+                            <div class="field">
+                                <label for="runsLast30">Runs (last 30 balls)</label>
+                                <input id="runsLast30" type="number" value="45" min="0" step="1" inputmode="numeric">
+                            </div>
+
+                            <div class="field">
+                                <label for="wicketsLast30">Wickets (last 30 balls)</label>
+                                <input id="wicketsLast30" type="number" value="1" min="0" max="10" step="1" inputmode="numeric">
+                            </div>
+                        </div>
+
+                        <button id="predictBtn" class="calculate-btn" type="button">
+                            <span aria-hidden="true">▶</span>
+                            Calculate probability
+                        </button>
+
+                        <div id="errorMessage" class="error-message" role="alert" aria-live="polite"></div>
+                    </section>
+
+                    <!-- Win probability -->
+                    <section class="card probability-card" aria-labelledby="probability-title" aria-live="polite">
+                        <h2 id="probability-title">Win probability</h2>
+
+                        <div class="gauge-panel">
+                            <p class="gauge-heading">Chance the chasing team wins</p>
+
+                            <svg id="gauge" viewBox="0 0 260 140" role="img" aria-label="Win probability gauge"></svg>
+
+                            <div class="probability-number">
+                                <span id="winProbability">40.9</span><small>%</small>
+                            </div>
+
+                            <p id="probabilityCaption" class="probability-caption">Slightly behind the game</p>
+                        </div>
+                    </section>
+                </section>
+
+                <!-- Stats -->
+                <section class="stats-grid" aria-label="Current match state">
+                    <article class="card stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M6 20V4M6 4h11l-2 4 2 4H6"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <strong id="runsLeft">100</strong>
+                            <span>Runs left</span>
+                        </div>
+                    </article>
+
+                    <article class="card stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m4 17 5-5 4 3 7-8"></path>
+                                <path d="M16 7h4v4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <strong id="requiredRate">10.0</strong>
+                            <span>Required rate</span>
+                        </div>
+                    </article>
+
+                    <article class="card stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 12h4l2-6 4 12 2-6h6"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <strong id="currentRate">8.0</strong>
+                            <span>Current rate</span>
+                        </div>
+                    </article>
+
+                    <article class="card stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M7 4v16M12 4v16M17 4v16M5 4h14"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <strong id="wicketsLeft">7</strong>
+                            <span>Wickets left</span>
+                        </div>
+                    </article>
+                </section>
+            </main>
+
+            <!-- Outcome -->
+            <aside class="outcome-panel" aria-labelledby="outcome-title">
+                <div class="outcome-header">
+                    <h2 id="outcome-title">Outcome</h2>
+                    <p>Win and loss split</p>
                 </div>
 
+                <div class="outcome-box">
+                    <div class="outcome-row">
+                        <div class="outcome-label">
+                            <span class="dot win"></span>
+                            <span>Win</span>
+                        </div>
+                        <strong id="winValue">40.9%</strong>
+                    </div>
 
-                <div class="field">
-                    <label for="bowling-team">Bowling Team</label>
-
-                    <select id="bowling-team">
-                        <option value="MI">Mumbai Indians</option>
-                        <option value="CSK">Chennai Super Kings</option>
-                        <option value="DC">Delhi Capitals</option>
-                        <option value="KKR">Kolkata Knight Riders</option>
-                        <option value="PBKS">Punjab Kings</option>
-                        <option value="RR">Rajasthan Royals</option>
-                        <option value="RCB">Royal Challengers Bengaluru</option>
-                        <option value="SRH">Sunrisers Hyderabad</option>
-                        <option value="GT">Gujarat Titans</option>
-                        <option value="LSG">Lucknow Super Giants</option>
-                    </select>
+                    <div class="split-bar">
+                        <span id="winBar" class="split-fill win-fill" style="width:40.9%"></span>
+                    </div>
                 </div>
 
-            </div>
+                <div class="outcome-box">
+                    <div class="outcome-row">
+                        <div class="outcome-label">
+                            <span class="dot loss"></span>
+                            <span>Loss</span>
+                        </div>
+                        <strong id="lossValue">59.1%</strong>
+                    </div>
 
-
-            <div class="grid">
-
-                <div class="field">
-                    <label for="target">Target Runs</label>
-                    <input
-                        type="number"
-                        id="target"
-                        min="1"
-                        placeholder="180"
-                    >
+                    <div class="split-bar">
+                        <span id="lossBar" class="split-fill loss-fill" style="width:59.1%"></span>
+                    </div>
                 </div>
 
-
-                <div class="field">
-                    <label for="score">Current Score</label>
-                    <input
-                        type="number"
-                        id="score"
-                        min="0"
-                        placeholder="80"
-                    >
+                <div class="scenario-card">
+                    <h3>Try a scenario</h3>
+                    <p>Change the overs or wickets lost and calculate again to see how the odds move.</p>
+                    <button id="resetBtn" type="button">Reset inputs</button>
                 </div>
+            </aside>
+        </div>
+    </div>
 
-
-                <div class="field">
-                    <label for="overs">Overs Completed</label>
-                    <input
-                        type="number"
-                        id="overs"
-                        min="0"
-                        max="20"
-                        step="0.1"
-                        placeholder="10.0"
-                    >
-                    <small>Example: 10.3 = 10 overs + 3 balls</small>
-                </div>
-
-
-                <div class="field">
-                    <label for="wickets">Wickets Lost</label>
-                    <input
-                        type="number"
-                        id="wickets"
-                        min="0"
-                        max="10"
-                        placeholder="3"
-                    >
-                </div>
-
-
-                <div class="field">
-                    <label for="runs-last-30">Runs in Last 30 Balls</label>
-                    <input
-                        type="number"
-                        id="runs-last-30"
-                        min="0"
-                        placeholder="45"
-                    >
-                </div>
-
-
-                <div class="field">
-                    <label for="wickets-last-30">Wickets in Last 30 Balls</label>
-                    <input
-                        type="number"
-                        id="wickets-last-30"
-                        min="0"
-                        max="10"
-                        placeholder="1"
-                    >
-                </div>
-
-            </div>
-
-
-            <button id="predict-btn">
-                Calculate Win Probability
-            </button>
-
-            <p id="error"></p>
-
-        </section>
-
-
-        <section id="result" class="result-card hidden">
-
-            <p class="result-label">CHASING TEAM WIN PROBABILITY</p>
-
-            <div id="probability">--%</div>
-
-            <div class="probability-bar">
-                <div id="probability-fill"></div>
-            </div>
-
-            <div class="result-details">
-
-                <div>
-                    <span>Win</span>
-                    <strong id="win-probability">--%</strong>
-                </div>
-
-                <div>
-                    <span>Loss</span>
-                    <strong id="loss-probability">--%</strong>
-                </div>
-
-            </div>
-
-
-            <div class="match-stats">
-
-                <div>
-                    <span>Runs Left</span>
-                    <strong id="runs-left">--</strong>
-                </div>
-
-                <div>
-                    <span>Required Rate</span>
-                    <strong id="rrr">--</strong>
-                </div>
-
-                <div>
-                    <span>Current Rate</span>
-                    <strong id="crr">--</strong>
-                </div>
-
-                <div>
-                    <span>Wickets Left</span>
-                    <strong id="wickets-left">--</strong>
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <footer>
-            Built with Python · Flask · Scikit-learn · Logistic Regression
-        </footer>
-
-    </main>
-
-
-    <script src="/script.js"></script>
-
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
