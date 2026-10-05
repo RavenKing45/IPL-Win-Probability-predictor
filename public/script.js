@@ -3,9 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
         targetRuns: 180,
         currentScore: 80,
         oversCompleted: 10.0,
-        wicketsLost: 3,
-        runsLast30: 45,
-        wicketsLast30: 1
+        wicketsLost: 3
     };
 
     const $ = (id) => document.getElementById(id);
@@ -14,9 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         targetRuns: $("targetRuns"),
         currentScore: $("currentScore"),
         oversCompleted: $("oversCompleted"),
-        wicketsLost: $("wicketsLost"),
-        runsLast30: $("runsLast30"),
-        wicketsLast30: $("wicketsLast30")
+        wicketsLost: $("wicketsLost")
     };
 
     const outputs = {
@@ -160,17 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
             throw new Error("Wickets lost must be between 0 and 10.");
         }
 
-        if (values.runsLast30 < 0) {
-            throw new Error("Runs in the last 30 balls cannot be negative.");
-        }
-
-        if (
-            values.wicketsLast30 < 0 ||
-            values.wicketsLast30 > 10
-        ) {
-            throw new Error("Recent wickets must be between 0 and 10.");
-        }
-
         return values;
     }
 
@@ -179,9 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
             target_runs: values.targetRuns,
             current_score: values.currentScore,
             overs_completed: values.oversCompleted,
-            wickets_lost: values.wicketsLost,
-            runs_last_30: values.runsLast30,
-            wickets_last_30: values.wicketsLast30
+            wickets_lost: values.wicketsLost
         };
     }
 
@@ -270,8 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
         fields.currentScore.value = DEFAULTS.currentScore;
         fields.oversCompleted.value = DEFAULTS.oversCompleted.toFixed(1);
         fields.wicketsLost.value = DEFAULTS.wicketsLost;
-        fields.runsLast30.value = DEFAULTS.runsLast30;
-        fields.wicketsLast30.value = DEFAULTS.wicketsLast30;
 
         calculateProbability();
     }

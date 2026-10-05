@@ -3,7 +3,8 @@ from pathlib import Path
 import joblib
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, brier_score_loss, log_loss
+from sklearn.model_selection import GroupShuffleSplit
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -30,11 +31,10 @@ FEATURES = [
     "balls_left",
     "RRR",
     "wickets_left",
-    "runs_last_30",
-    "wickets_last_30",
 ]
 
 TARGET = "won"
+GROUP = "match_id"
 
 
 # --------------------------------------------------
@@ -42,37 +42,31 @@ TARGET = "won"
 # --------------------------------------------------
 
 print("Loading dataset...")
-
 df = pd.read_csv(DATA_PATH)
-
 print(f"Dataset shape: {df.shape}")
-
-
-# --------------------------------------------------
-# Select features and target
-# --------------------------------------------------
+print(f"Matches: {df[GROUP].nunique()}")
 
 X = df[FEATURES]
 y = df[TARGET]
-
-print("\nFeatures:")
-print(FEATURES)
-
-print("\nTarget:")
-print(TARGET)
+groups = df[GROUP]
 
 
 # --------------------------------------------------
-# Train / test split
+# Train / test split (by match, so no match is in both)
 # --------------------------------------------------
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    random_state=42,
-    stratify=y,
-)
+splitter = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+train_idx, test_idx = next(splitter.split(X, y, groups=groups))
+
+X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
+y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+
+train_matches = set(groups.iloc[train_idx])
+test_matches = set(groups.iloc[test_idx])
+assert train_matches.isdisjoint(test_matches), "Match leaked across split!"
+
+print(f"Train: {len(train_matches)} matches, {len(X_train)} rows")
+print(f"Test:  {len(test_matches)} matches, {len(X_test)} rows")
 
 
 # --------------------------------------------------
@@ -81,12 +75,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 pipeline = Pipeline([
     ("scaler", StandardScaler()),
-    (
-        "model",
-        LogisticRegression(
-            max_iter=2000
-        ),
-    ),
+    ("model", LogisticRegression(max_iter=2000)),
 ])
 
 
@@ -95,7 +84,6 @@ pipeline = Pipeline([
 # --------------------------------------------------
 
 print("\nTraining Logistic Regression...")
-
 pipeline.fit(X_train, y_train)
 
 
@@ -103,11 +91,17 @@ pipeline.fit(X_train, y_train)
 # Evaluate
 # --------------------------------------------------
 
-train_accuracy = pipeline.score(X_train, y_train)
-test_accuracy = pipeline.score(X_test, y_test)
+def report(name, X_, y_):
+    p = pipeline.predict_proba(X_)[:, 1]
+    print(
+        f"{name:6s} accuracy={accuracy_score(y_, p > 0.5):.4f}  "
+        f"log_loss={log_loss(y_, p):.4f}  "
+        f"brier={brier_score_loss(y_, p):.4f}"
+    )
 
-print(f"\nTraining accuracy: {train_accuracy:.4f}")
-print(f"Test accuracy:     {test_accuracy:.4f}")
+print()
+report("Train", X_train, y_train)
+report("Test", X_test, y_test)
 
 
 # --------------------------------------------------
@@ -115,8 +109,6 @@ print(f"Test accuracy:     {test_accuracy:.4f}")
 # --------------------------------------------------
 
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
-
 joblib.dump(pipeline, MODEL_PATH)
 
-print(f"\nModel saved to:")
-print(MODEL_PATH)
+print(f"\nModel saved to:\n{MODEL_PATH}")
