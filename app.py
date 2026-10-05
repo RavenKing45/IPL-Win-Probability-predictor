@@ -65,8 +65,6 @@ def predict():
         "current_score",
         "overs_completed",
         "wickets_lost",
-        "runs_last_30",
-        "wickets_last_30",
     ]
 
     missing_fields = [
@@ -89,8 +87,6 @@ def predict():
     current_score = float(data["current_score"])
     overs_completed = float(data["overs_completed"])
     wickets_lost = float(data["wickets_lost"])
-    runs_last_30 = float(data["runs_last_30"])
-    wickets_last_30 = float(data["wickets_last_30"])
 
     # ----------------------------------------------
     # Basic validation
@@ -160,8 +156,6 @@ def predict():
         "balls_left": balls_left,
         "RRR": rrr,
         "wickets_left": wickets_left,
-        "runs_last_30": runs_last_30,
-        "wickets_last_30": wickets_last_30,
     }])
 
     # ----------------------------------------------
@@ -183,7 +177,5 @@ def predict():
             "balls_left": balls_left,
             "RRR": round(rrr, 2),
             "wickets_left": wickets_left,
-            "runs_last_30": runs_last_30,
-            "wickets_last_30": wickets_last_30,
         }
     })

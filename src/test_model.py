@@ -23,8 +23,6 @@ sample = pd.DataFrame([{
     "balls_left": 75,
     "RRR": 8.0,
     "wickets_left": 7,
-    "runs_last_30": 45,
-    "wickets_last_30": 1,
 }])
 
 

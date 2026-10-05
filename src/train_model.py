@@ -31,8 +31,6 @@ FEATURES = [
     "balls_left",
     "RRR",
     "wickets_left",
-    "runs_last_30",
-    "wickets_last_30",
 ]
 
 TARGET = "won"
