@@ -1,0 +1,93 @@
+/* The calibration page has its own styles so the predictor homepage layout is unchanged. */
+.calibration-page {
+    min-height: 100vh;
+    background: var(--page-bg, #e9eaec);
+    color: var(--ink, #0f1320);
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.calibration-page * { box-sizing: border-box; }
+.calibration-page-shell { width: min(1180px, 100%); margin: 0 auto; padding: 24px 20px 18px; }
+.calibration-page-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.calibration-back-link, .calibration-return-link { display: inline-flex; align-items: center; gap: 8px; color: #202838; text-decoration: none; font-size: 12px; font-weight: 600; }
+.calibration-back-link { padding: 10px 13px; border: 1px solid #cfd4dc; border-radius: 10px; background: #fff; }
+.calibration-back-link:hover, .calibration-return-link:hover { text-decoration: underline; }
+.calibration-page-brand { display: flex; align-items: center; gap: 9px; color: #5d6574; font-size: 12px; font-weight: 600; }
+.calibration-brand-mark { width: 20px; height: 20px; display: flex; align-items: flex-end; justify-content: center; gap: 2px; padding: 4px; border-radius: 6px; background: #10131f; }
+.calibration-brand-mark i { display: block; width: 2px; border-radius: 1px; background: #fff; }
+.calibration-brand-mark i:nth-child(1) { height: 7px; }
+.calibration-brand-mark i:nth-child(2) { height: 10px; }
+.calibration-brand-mark i:nth-child(3) { height: 13px; }
+.calibration-brand-divider { padding: 0 4px; color: #a1a7b1; }
+
+.calibration-page-grid { display: grid; grid-template-columns: minmax(0, 1fr) 350px; align-items: start; gap: 16px; }
+.calibration-page-card, .calibration-explainer { min-width: 0; border: 1px solid #cfd4dc; border-radius: 20px; background: #fff; box-shadow: 0 8px 24px rgb(16 19 31 / 3%); }
+.calibration-page-card { padding: 25px 26px 20px; }
+.calibration-page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.calibration-eyebrow { margin: 0 0 8px; color: #467c65; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+.calibration-page-heading h1 { max-width: 640px; margin: 0; color: #111522; font-size: clamp(20px, 2.2vw, 27px); font-weight: 700; line-height: 1.25; letter-spacing: -.7px; }
+.calibration-subtitle { max-width: 680px; margin: 10px 0 0; color: #626b7b; font-size: 14px; line-height: 1.7; }
+.calibration-badge { flex: 0 0 auto; max-width: 180px; padding: 8px 10px; border: 1px solid #cde5d8; border-radius: 999px; background: #eff8f2; color: #286647; font-size: 10px; font-weight: 700; white-space: normal; text-align: center; }
+.calibration-intro { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; padding: 13px 14px; border-radius: 12px; background: #f4f7f6; }
+.calibration-info-mark { display: grid; flex: 0 0 auto; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: #d9ebe1; color: #286647; font-size: 12px; font-weight: 700; }
+.calibration-intro p { margin: 1px 0 0; color: #525b68; font-size: 12px; line-height: 1.65; }
+
+.calibration-chart-wrap { position: relative; width: 100%; margin-top: 14px; }
+#calibrationChart { display: block; width: 100%; height: auto; min-height: 260px; overflow: visible; }
+#calibrationChart[hidden], #calibrationEmpty[hidden] { display: none !important; }
+.calibration-empty { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 26px; border: 1px dashed #cfd5dc; border-radius: 14px; background: #fafbfc; color: #626b7a; text-align: center; font-size: 12px; line-height: 1.6; }
+.calibration-empty strong { color: #1d2430; font-size: 14px; }
+.calibration-empty code { padding: 2px 5px; border-radius: 4px; background: #eef0f3; color: #1d2430; }
+.calibration-legend { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 28px; width: 100%; padding-top: 6px; color: #535d6d; font-size: 13px; text-align: center; }
+.calibration-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend-swatch { display: inline-block; width: 30px; height: 0; border-top: 2.5px solid #279365; }
+.legend-ideal { border-top-color: #9098a5; border-top-style: dashed; }
+.legend-observed { border-top-color: #279365; }
+.calibration-summary { margin: 13px 0 0; color: #586272; font-size: 12px; line-height: 1.7; }
+.calibration-footnote { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid #e7eaef; color: #7b8290; font-size: 10px; line-height: 1.65; }
+
+.calibration-explainer { padding: 25px 25px; }
+.calibration-explainer h2 { margin: 0 0 22px; font-size: 21px; line-height: 1.35; letter-spacing: -.4px; }
+.calibration-explainer-item { display: flex; gap: 11px; align-items: flex-start; margin: 0 0 20px; }
+.explainer-mark { flex: 0 0 auto; width: 24px; height: 0; margin-top: 8px; border-top: 3px solid #279365; }
+.explainer-ideal { border-top-color: #9098a5; border-top-style: dashed; }
+.explainer-good { border-top-color: #279365; }
+.explainer-under { width: 9px; height: 9px; margin: 4px 7px 0; border: 0; border-radius: 50%; background: #4779bd; }
+.explainer-over { width: 9px; height: 9px; margin: 4px 7px 0; border: 0; border-radius: 50%; background: #d18a38; }
+.calibration-explainer-item strong { display: block; margin-bottom: 5px; color: #252c39; font-size: 14px; }
+.calibration-explainer-item p, .calibration-example p { margin: 0; color: #626c7c; font-size: 13px; line-height: 1.7; }
+.calibration-example { margin-top: 4px; padding: 14px; border: 1px solid #e3e6eb; border-radius: 12px; background: #f8f9fb; }
+.calibration-example strong { display: block; margin-bottom: 6px; font-size: 14px; }
+.calibration-return-link { margin-top: 20px; }
+.calibration-page-footer { padding: 14px 4px 0; color: #838a98; font-size: 11px; text-align: center; }
+
+/* SVG uses explicit stroke/fill attributes from calibration.js. */
+.cal-grid { stroke: #e8ebef; stroke-width: 1; }
+.cal-axis { stroke: #9aa2af; stroke-width: 1.25; }
+.cal-tick { fill: #737b8b; font-family: inherit; font-size: 12px; }
+.cal-axis-title { fill: #424a59; font-family: inherit; font-size: 13px; font-weight: 600; }
+.cal-ideal-line { stroke: #9098a5; stroke-width: 2; stroke-dasharray: 7 7; }
+.cal-ideal-label { fill: #788190; font-family: inherit; font-size: 11px; }
+.cal-observed-line { fill: none; stroke: #279365; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.cal-point { fill: #fff; stroke: #188657; stroke-width: 3; cursor: help; }
+.cal-point:focus-visible { outline: none; stroke: #10131f; stroke-width: 4; }
+
+@media (max-width: 900px) {
+    .calibration-page-grid { grid-template-columns: minmax(0, 1fr); }
+    .calibration-explainer { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+    .calibration-explainer > .calibration-eyebrow, .calibration-explainer > h2, .calibration-example, .calibration-return-link { grid-column: 1 / -1; }
+    .calibration-explainer h2 { margin-bottom: 4px; }
+    .calibration-explainer-item { margin-bottom: 2px; }
+}
+@media (max-width: 600px) {
+    .calibration-page-shell { padding: 12px 10px; }
+    .calibration-page-header { align-items: flex-start; flex-direction: column; }
+    .calibration-page-card { padding: 18px 14px; border-radius: 16px; }
+    .calibration-page-heading { flex-direction: column; gap: 12px; }
+    .calibration-page-heading h1 { font-size: 21px; }
+    .calibration-chart-wrap { margin-left: -4px; width: calc(100% + 8px); }
+    .cal-tick { font-size: 11px; }
+    .cal-axis-title { font-size: 12px; }
+    .calibration-explainer { display: block; padding: 20px 17px; }
+    .calibration-explainer-item { margin-bottom: 17px; }
+}

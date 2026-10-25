@@ -1,279 +1,83 @@
-# 🏏 IPL Win Probability Predictor
+# IPL Win Probability Predictor
 
-An end-to-end Machine Learning project that estimates the probability of the **chasing team winning an IPL match** from the current state of the chase.
+An end-to-end machine-learning project that estimates the chance that the chasing team wins an IPL match, based on the current state of the chase.
 
-The project transforms raw IPL match-level and ball-by-ball data into a delivery-level, model-ready dataset, trains classification models, and exposes the trained prediction pipeline through a Flask web application deployed on Vercel.
+**[Open the live demo](https://ipl-win-probability-predictor-theta.vercel.app/)**
 
-## 🚀 Live Demo
+## What does it do?
 
-**[Try the IPL Win Probability Predictor](https://ipl-win-probability-predictor-theta.vercel.app/)**
+Enter the target, current score, overs completed and wickets lost. The app derives the remaining runs, balls left, current run rate and required run rate, then asks a trained Logistic Regression model for the chasing team's win probability.
 
----
+A prediction such as **65%** means the model estimates a 65% chance of a win for the chasing team in that match state. It is a probability estimate, not a guarantee.
 
-## 📌 Project Goal
+## Model and features
 
-The objective is to estimate the probability of the chasing team winning at a given point in the second innings.
+The deployed model is a scikit-learn `Pipeline` containing `StandardScaler` and `LogisticRegression`, saved as `models/logistic_regression_pipeline.joblib`.
 
-Instead of predicting only from final match-level information, each modelling row represents a **snapshot of an ongoing chase after a delivery**.
+It uses six match-state features:
 
-The model uses the information available at that point — such as the target, runs remaining, required run rate, wickets remaining, and recent scoring momentum — to estimate the eventual outcome.
-
----
-
-## 🧠 Machine Learning Approach
-
-### Current Model
-
-The currently deployed model is:
-
-**Logistic Regression**
-
-The model is implemented as a scikit-learn pipeline and serialized using `joblib`.
-
-The project has also included **Support Vector Machine (SVM)** experimentation, while the deployed application currently uses the Logistic Regression pipeline.
-
-```text
-Raw IPL Data
-     ↓
-Data Cleaning
-     ↓
-Feature Engineering
-     ↓
-Delivery-level Chase States
-     ↓
-Logistic Regression Pipeline
-     ↓
-Predicted Probability
-     ↓
-Web Application
-```
-
-The model uses `predict_proba()` to return a probability rather than only a binary win/loss prediction.
-
----
-
-## 📊 Dataset Construction
-
-The raw data is divided into two main sources.
-
-### Match-level data
-
-Contains information such as:
-
-- `match_id`
-- `season_id`
-- `match_date`
-- `city`
-- `venue`
-- `toss_winner`
-- `team1`
-- `team2`
-- `toss_decision`
-- `match_winner`
-- `result`
-
-Post-match information such as `player_of_match` is not used as a predictive feature.
-
-### Ball-by-ball data
-
-Contains delivery-level information such as:
-
-- innings
-- batting team
-- bowling team
-- runs
-- wickets
-- legal-delivery information
-- over / ball information
-
-The two datasets are combined to construct a delivery-level chase-state dataset.
-
----
-
-## 🛠️ Feature Engineering Pipeline
-
-### 1. Calculate the first-innings score
-
-The first innings is extracted from the ball-by-ball dataset and grouped by `match_id`.
-
-The total first-innings runs are calculated and merged into the match-level dataset.
-
-This provides the reference target for the chase:
-
-```text
-target_runs = first_innings_runs + 1
-```
-
-### 2. Construct the second-innings dataset
-
-The second innings is isolated from the ball-by-ball data.
-
-Super Over deliveries are excluded because the project models the normal T20 chase rather than the Super Over tie-breaker.
-
-Every second-innings delivery is retained as a potential prediction snapshot.
-
-### 3. Build the current match state
-
-For every match, cumulative values are calculated for:
-
-- `current_score`
-- `wickets_lost`
-
-This changes the dataset from a match-level representation into a sequence of match states:
-
-> **1 row = 1 delivery / one point in the chase**
-
-### 4. Calculate chase requirements and rates
-
-The following features are derived:
-
-- `target_runs`
-- `runs_left`
-- `total_legal_balls`
-- `balls_left`
-- `overs_completed`
-- `overs_left`
-- `CRR` — Current Run Rate
-- `RRR` — Required Run Rate
-- `wickets_lost`
-
-Legal deliveries are tracked explicitly so wides and no-balls do not incorrectly consume one of the 120 legal deliveries in a standard T20 innings.
-
-### 5. Add recent momentum features
-
-The project also includes rolling features describing recent batting performance:
-
-- `runs_last_30` — runs scored over the previous 30 legal deliveries
-- `wickets_last_30` — wickets lost over the previous 30 legal deliveries
-
-These features provide short-term information that complements overall metrics such as CRR and RRR.
-
-### 6. Create the target variable
-
-The binary outcome is derived from the chasing team's relationship to the final match winner:
-
-```python
-won = (team_batting == match_winner)
-```
-
-This gives:
-
-- `1` → the chasing team eventually won
-- `0` → the chasing team eventually lost
-
----
-
-## 🧹 Data Cleaning
-
-Before model training, the dataset is cleaned to keep the training examples consistent with the assumptions of the predictor.
-
-The preprocessing includes:
-
-- removing tied matches
-- removing no-result matches
-- handling matches with revised targets / DLS or altered innings conditions
-- removing states where the chase has already been won
-- removing states where no legal balls remain
-- handling undefined CRR / RRR edge cases
-- removing non-legal delivery snapshots where appropriate
-- normalising inconsistent venue names
-- handling missing city information
-- maintaining consistent team aliases across IPL eras
-
-These steps are important because the model should only see states that represent a meaningful **ongoing normal chase**.
-
----
-
-## 📈 Final Modelling Dataset
-
-The processed modelling dataset currently contains:
-
-**117,558 observations and 17 columns.**
-
-The final deployed Logistic Regression model uses these 8 match-state features:
-
-| Feature | Description |
+| Feature | Plain-English meaning |
 |---|---|
-| `target_runs` | Target score set by the first innings |
-| `runs_left` | Runs still required to win |
-| `CRR` | Current Run Rate |
-| `balls_left` | Legal deliveries remaining |
-| `RRR` | Required Run Rate |
+| `target_runs` | The score the chasing team needs to beat |
+| `runs_left` | Runs still needed to reach the target |
+| `CRR` | Current run rate |
+| `balls_left` | Legal balls remaining in the innings |
+| `RRR` | Required run rate from this point |
 | `wickets_left` | Wickets remaining |
-| `runs_last_30` | Runs scored in the previous 30 legal deliveries |
-| `wickets_last_30` | Wickets lost in the previous 30 legal deliveries |
 
-A typical prediction state can therefore look like:
+The deployed model currently uses Logistic Regression. Other algorithms and ensembles were explored in notebooks; those experiments do not automatically replace the production model.
 
-| Feature | Example |
-|---|---:|
-| Target Runs | 180 |
-| Runs Left | 100 |
-| Wickets Left | 7 |
-| Balls Left | 60 |
-| CRR | 8.0 |
-| RRR | 10.0 |
-| Runs Last 30 | 45 |
-| Wickets Last 30 | 1 |
+## How the data is prepared
 
-The model learns the relationship between these match states and the eventual outcome.
+The project combines match-level and ball-by-ball data into snapshots of the second innings. Each row describes one point in a chase, using only match-state information available at that point.
 
----
+The data-preparation workflow handles match outcomes and edge cases such as tied or abandoned matches, revised targets, Super Overs, innings boundaries and undefined run rates. Raw and processed datasets are local files and are excluded from Git.
 
-## 📈 Model Performance
+The processed dataset used for experiments contains 117,558 rows and 17 columns. The production pipeline itself uses the six features listed above.
 
-The current Logistic Regression model achieved:
+## Understanding the calibration chart
 
-| Metric | Score |
-|---|---:|
-| Training Accuracy | 78.62% |
-| Test Accuracy | 78.08% |
+The app includes a **calibration chart** to help answer a different question from accuracy: *when the model gives a probability, does that number tend to match what happened in similar past situations?*
 
-The test accuracy is measured on a held-out test set.
+- **Each dot** groups past delivery states with similar predicted probabilities.
+- **Bottom axis** shows the model's average predicted chance for that group.
+- **Side axis** shows how often the chasing team actually won in that group.
+- **Dashed diagonal** is the reference for perfect calibration. If the model says 70% for a group, around 70% of those states should end in a win.
+- **Observed line near the dashed line** means predicted probabilities broadly match past outcomes. A point below the line means the model predicted higher chances than occurred; above the line means actual wins were more common than the model predicted.
 
-Because the application produces probabilities, future evaluation can additionally include probability-oriented metrics such as:
+The chart is built from a match-grouped holdout: complete matches are kept out of model training. It uses historical delivery-state rows, so the points are not independent matches, and the split is not a strict future-season test. Use it as a useful reliability check, not a guarantee of future performance. The chart does not change or recalibrate the model by itself.
 
-- ROC-AUC
-- Log Loss
-- Probability calibration
+### Generate the calibration data
 
----
+The calibration JSON is generated by the same training script that saves the deployed pipeline. Run this command from the project root after confirming that `data/processed/reduced/Final_data.csv` exists:
 
-## 🌐 Web Application & API
-
-The trained model is exposed through a Flask application.
-
-```text
-                    User
-                      │
-                      ▼
-              Web Application
-                      │
-                      ▼
-                   Flask
-                 /api/predict
-                      │
-                      ▼
-        Logistic Regression Pipeline
-                      │
-                      ▼
-              Win Probability
+```bash
+uv run python src/train_model.py
 ```
 
-### API Endpoint
+This writes:
 
-The prediction endpoint accepts the current match state as JSON.
+- `models/logistic_regression_pipeline.joblib`
+- `public/calibration_data.json`
 
-Example request:
+The JSON contains the calibration points, their sample counts, and holdout log-loss/Brier-score values. Commit the generated `public/calibration_data.json` with the code changes so the chart can load it in deployment. The model's train/test split is grouped by `match_id`, so a match cannot appear on both sides.
+
+## Model experiments
+
+The repository contains experiments for Logistic Regression, calibrated SVM, Random Forest, Extra Trees, HistGradientBoosting, XGBoost and LightGBM, along with blending and stacking experiments.
+
+The experiments so far support keeping Logistic Regression as the current production baseline: it has been competitive on probability-focused metrics such as log loss and Brier score. The searches were limited, and the later-season holdout has been examined during development, so those results should not be presented as an untouched final test. See `models/` and `reports/` for the notebooks and saved experiment results.
+
+## API
+
+`POST /api/predict` accepts a JSON request with the current chase situation. Example:
 
 ```json
 {
   "target_runs": 180,
   "current_score": 80,
   "overs_completed": 10,
-  "wickets_lost": 3,
-  "runs_last_30": 45,
-  "wickets_last_30": 1
+  "wickets_lost": 3
 }
 ```
 
@@ -282,178 +86,79 @@ Example response:
 ```json
 {
   "win_probability": 40.85,
-  "loss_probability": 59.15
+  "loss_probability": 59.15,
+  "features": {
+    "target_runs": 180,
+    "runs_left": 100,
+    "CRR": 8.0,
+    "balls_left": 60,
+    "RRR": 10.0,
+    "wickets_left": 7
+  }
 }
 ```
 
-The frontend converts the user's match-state inputs into the required model features and displays the resulting probabilities.
+## Run locally
 
----
+1. Clone the repository and enter its directory:
 
-## ☁️ Deployment
+   ```bash
+   git clone https://github.com/RavenKing45/IPL-Win-Probability-predictor.git
+   cd IPL-Win-Probability-predictor
+   ```
 
-The application is deployed using **Vercel**.
+2. Install the project environment using `uv`:
 
-The deployment workflow is:
+   ```bash
+   uv sync
+   ```
 
-```text
-Model Training
-      ↓
-.joblib Model
-      ↓
-Flask API
-      ↓
-GitHub
-      ↓
-Vercel
-      ↓
-Live Web Application
-```
+3. Make sure the processed dataset is present at `data/processed/reduced/Final_data.csv`.
 
-The trained model artifact is stored in:
+4. Generate the model and calibration data:
 
-```text
-models/logistic_regression_pipeline.joblib
-```
+   ```bash
+   uv run python src/train_model.py
+   ```
 
-The raw and processed datasets are excluded from the repository through `.gitignore`, while the trained model is retained because it is required for production inference.
+5. Start Flask:
 
----
+   ```bash
+   uv run flask --app app run
+   ```
 
-## 💻 Tech Stack
+6. Open `http://127.0.0.1:5000`.
 
-### Machine Learning
-
-- Python
-- Pandas
-- NumPy
-- Scikit-learn
-- Logistic Regression
-- Support Vector Machine
-- Joblib
-
-### Web Application
-
-- Flask
-- HTML
-- CSS
-- JavaScript
-
-### Development & Deployment
-
-- uv
-- Git
-- GitHub
-- Vercel
-
----
-
-## 📁 Project Structure
+## Project layout
 
 ```text
 IPL-Win-Probability-predictor/
-│
-├── app.py                         # Flask application and API
-│
-├── data/
-│   ├── raw/                       # Raw datasets (not tracked)
-│   └── processed/                 # Processed datasets (not tracked)
-│
+├── app.py
+├── data/                         # Local raw/processed data; not tracked
 ├── models/
-│   └── logistic_regression_pipeline.joblib
-│
-├── notebooks/                     # Exploratory analysis and experimentation
-├── reports/                       # Analysis and results
-│
-├── src/
-│   ├── train_model.py             # Model training
-│   └── test_model.py              # Model inference testing
-│
+│   ├── logistic_regression_pipeline.joblib
+│   └── *.ipynb                   # Model experiments
 ├── public/
-│   ├── style.css                  # Frontend styling
-│   └── script.js                  # Frontend logic
-│
+│   ├── calibration_data.json     # Generated by src/train_model.py
+│   ├── script.js
+│   └── style.css
+├── reports/                      # Evaluation reports
+├── src/
+│   ├── train_model.py
+│   └── test_model.py
 ├── templates/
-│   └── index.html                 # Web interface
-│
-├── .gitignore
-├── pyproject.toml
+│   └── index.html
 ├── requirements.txt
-├── uv.lock
 └── README.md
 ```
 
----
+## Limitations and next steps
 
-## ⚙️ Running Locally
+- Probabilities are estimates based on historical match-state data, not live odds or guarantees.
+- The calibration chart describes a match-grouped validation split, not a strictly chronological evaluation.
+- Results can change across IPL seasons and match conditions.
+- Future work may include validation on a fresh season, monitoring calibration drift, and recalibration if the evidence supports it.
 
-### 1. Clone the repository
+## Author
 
-```bash
-git clone https://github.com/RavenKing45/IPL-Win-Probability-predictor.git
-cd IPL-Win-Probability-predictor
-```
-
-### 2. Install dependencies
-
-Using `uv`:
-
-```bash
-uv sync
-```
-
-### 3. Start the Flask application
-
-```bash
-uv run flask --app app run
-```
-
-The application will be available at:
-
-```text
-http://127.0.0.1:5000
-```
-
----
-
-## 🔄 Retraining the Model
-
-The model can be retrained using:
-
-```bash
-uv run python src/train_model.py
-```
-
-The trained pipeline is saved to:
-
-```text
-models/logistic_regression_pipeline.joblib
-```
-
-After retraining, the updated model can be committed and pushed to GitHub. Vercel will automatically create a new deployment.
-
----
-
-## 🔮 Future Improvements
-
-Potential improvements include:
-
-- Probability calibration
-- ROC-AUC and log-loss evaluation
-- Match-wise train/test splitting to reduce potential match-level leakage
-- Comparison with tree-based models such as Random Forest, XGBoost, and CatBoost
-- Improved handling of DLS/rain-affected matches
-- More extensive hyperparameter tuning
-- Feature selection and additional momentum features
-- Win-probability visualization throughout an innings
-- Real-time match data integration
-- More extensive validation across IPL seasons
-- Model interpretability and feature analysis
-
----
-
-## 👨‍💻 Author
-
-**Raven King**
-
-B.Tech — Data Science & AI
+**Raven King** · B.Tech, Data Science & AI

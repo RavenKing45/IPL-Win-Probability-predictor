@@ -48,6 +48,15 @@ def home():
 
 
 # --------------------------------------------------
+# Calibration page
+# --------------------------------------------------
+
+@app.route("/calibration", methods=["GET"])
+def calibration():
+    return render_template("calibration.html")
+
+
+# --------------------------------------------------
 # Prediction endpoint
 # --------------------------------------------------
 

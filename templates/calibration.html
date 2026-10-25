@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Understand how closely the IPL win predictor's probabilities match past results.">
+    <title>Model Calibration | IPL Win Probability Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='calibration.css') }}">
+</head>
+<body class="calibration-page">
+    <div class="calibration-page-shell">
+        <header class="calibration-page-header">
+            <a class="calibration-back-link" href="/" aria-label="Back to the predictor">← <span>Back to predictor</span></a>
+            <div class="calibration-page-brand">
+                <span class="calibration-brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span>IPL Predictor <span class="calibration-brand-divider">/</span> Model check</span>
+            </div>
+        </header>
+
+        <main class="calibration-page-grid">
+            <section class="calibration-page-card" aria-labelledby="calibration-title">
+                <div class="calibration-page-heading">
+                    <div>
+                        <p class="calibration-eyebrow">MODEL CHECK</p>
+                        <h1 id="calibration-title">When the model says 70%, does it win about 70% of the time?</h1>
+                        <p class="calibration-subtitle">This chart checks whether the win chances predicted by the model line up with what happened in past match states.</p>
+                    </div>
+                    <span id="calibrationBadge" class="calibration-badge">Loading results…</span>
+                </div>
+
+                <div class="calibration-intro">
+                    <span class="calibration-info-mark" aria-hidden="true">i</span>
+                    <p>Each dot groups past deliveries where the model gave similar win chances. We compare the average predicted chance with how often those states ended in a win.</p>
+                </div>
+
+                <div class="calibration-chart-wrap">
+                    <svg id="calibrationChart" viewBox="0 0 760 470" role="img" aria-label="Calibration chart comparing predicted win probability with actual win rate" aria-describedby="calibrationSummary"></svg>
+                    <div id="calibrationEmpty" class="calibration-empty" role="status" aria-live="polite" hidden>
+                        <strong>Calibration chart data isn't available.</strong>
+                        <span id="calibrationError">Check that <code>public/calibration_data.json</code> exists, then refresh the page.</span>
+                    </div>
+                </div>
+
+                <div class="calibration-legend" aria-label="Chart legend">
+                    <span><i class="legend-swatch legend-ideal" aria-hidden="true"></i> Perfect calibration</span>
+                    <span><i class="legend-swatch legend-observed" aria-hidden="true"></i> Model on held-out data</span>
+                </div>
+
+                <p id="calibrationSummary" class="calibration-summary" aria-live="polite">Loading calibration results…</p>
+                <p class="calibration-footnote">This is a check on a group of past match states, not a promise about any one match. States from the same match are kept together, but this split isn't a strict future-season test. The chart does not change the model.</p>
+            </section>
+
+            <aside class="calibration-explainer" id="about" aria-labelledby="reading-title">
+                <p class="calibration-eyebrow">HOW TO READ IT</p>
+                <h2 id="reading-title">Two lines tell the story</h2>
+                <div class="calibration-explainer-item">
+                    <span class="explainer-mark explainer-ideal" aria-hidden="true"></span>
+                    <div><strong>Dashed line</strong><p>This is the target. A 70% predicted chance should line up with a 70% actual win rate.</p></div>
+                </div>
+                <div class="calibration-explainer-item">
+                    <span class="explainer-mark explainer-good" aria-hidden="true"></span>
+                    <div><strong>Green line</strong><p>This is what happened in the held-out data. The closer it stays to the dashed line, the better the probabilities match past results.</p></div>
+                </div>
+                <div class="calibration-explainer-item">
+                    <span class="explainer-mark explainer-under" aria-hidden="true"></span>
+                    <div><strong>Above the dashed line</strong><p>Wins happened more often than the model expected. It may be underestimating win chances in that range.</p></div>
+                </div>
+                <div class="calibration-explainer-item">
+                    <span class="explainer-mark explainer-over" aria-hidden="true"></span>
+                    <div><strong>Below the dashed line</strong><p>Wins happened less often than the model expected. It may be overestimating win chances in that range.</p></div>
+                </div>
+                <div class="calibration-example">
+                    <strong>Example</strong>
+                    <p>If the model gives lots of match states about a 70% chance, we'd hope about 70% of those states end in a chasing-team win.</p>
+                </div>
+                <a class="calibration-return-link" href="/">← Return to the predictor</a>
+            </aside>
+        </main>
+        <footer class="calibration-page-footer">IPL Win Probability Predictor · Historical reliability check</footer>
+    </div>
+    <script src="{{ url_for('static', filename='calibration.js') }}" defer></script>
+</body>
+</html>

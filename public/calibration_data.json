@@ -1,0 +1,92 @@
+{
+  "model": "Logistic Regression",
+  "validation_method": "20% match-grouped holdout",
+  "validation_matches": 213,
+  "validation_states": 23351,
+  "log_loss": 0.40393036613567984,
+  "brier_score": 0.13192720232203764,
+  "n_bins": 10,
+  "bins": [
+    {
+      "label": "0\u201310%",
+      "range_low": 0.0,
+      "range_high": 0.1,
+      "mean_predicted_probability": 0.032936031296546625,
+      "observed_win_rate": 0.01641337386018237,
+      "count": 3290
+    },
+    {
+      "label": "10\u201320%",
+      "range_low": 0.1,
+      "range_high": 0.2,
+      "mean_predicted_probability": 0.14887913250322193,
+      "observed_win_rate": 0.16,
+      "count": 2125
+    },
+    {
+      "label": "20\u201330%",
+      "range_low": 0.2,
+      "range_high": 0.3,
+      "mean_predicted_probability": 0.24973855554640834,
+      "observed_win_rate": 0.26711941143180534,
+      "count": 1767
+    },
+    {
+      "label": "30\u201340%",
+      "range_low": 0.3,
+      "range_high": 0.4,
+      "mean_predicted_probability": 0.3503248107823169,
+      "observed_win_rate": 0.32181818181818184,
+      "count": 1650
+    },
+    {
+      "label": "40\u201350%",
+      "range_low": 0.4,
+      "range_high": 0.5,
+      "mean_predicted_probability": 0.44970574646383554,
+      "observed_win_rate": 0.423841059602649,
+      "count": 1812
+    },
+    {
+      "label": "50\u201360%",
+      "range_low": 0.5,
+      "range_high": 0.6,
+      "mean_predicted_probability": 0.5503583209772034,
+      "observed_win_rate": 0.5236907730673317,
+      "count": 2005
+    },
+    {
+      "label": "60\u201370%",
+      "range_low": 0.6,
+      "range_high": 0.7,
+      "mean_predicted_probability": 0.6512677010871318,
+      "observed_win_rate": 0.6322645290581163,
+      "count": 1996
+    },
+    {
+      "label": "70\u201380%",
+      "range_low": 0.7,
+      "range_high": 0.8,
+      "mean_predicted_probability": 0.7511389832051281,
+      "observed_win_rate": 0.7659303313508921,
+      "count": 2354
+    },
+    {
+      "label": "80\u201390%",
+      "range_low": 0.8,
+      "range_high": 0.9,
+      "mean_predicted_probability": 0.8524290756840003,
+      "observed_win_rate": 0.921083172147002,
+      "count": 2585
+    },
+    {
+      "label": "90\u2013100%",
+      "range_low": 0.9,
+      "range_high": 1.0,
+      "mean_predicted_probability": 0.9551877044781967,
+      "observed_win_rate": 0.9986726838332891,
+      "count": 3767
+    }
+  ],
+  "note": "Held-out historical delivery states from matches excluded from training. This is a random match-grouped split, not a chronological future-season test."
+}
