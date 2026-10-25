@@ -1,0 +1,3 @@
+split,prediction_correlation,classification_disagreement_rate,mean_absolute_probability_difference
+Development OOF,0.9997058973592732,0.0038140124736189586,0.00549919529144713
+Temporal holdout,0.9997405775124472,0.005716687683900799,0.005736186412253376

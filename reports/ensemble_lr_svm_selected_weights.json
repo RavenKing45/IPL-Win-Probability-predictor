@@ -1,0 +1,7 @@
+{
+  "selection_metric": "development OOF log loss",
+  "probability_blend_lr_weight": 0.63,
+  "probability_blend_svm_weight": 0.37,
+  "log_odds_blend_lr_weight": 0.61,
+  "log_odds_blend_svm_weight": 0.39
+}
