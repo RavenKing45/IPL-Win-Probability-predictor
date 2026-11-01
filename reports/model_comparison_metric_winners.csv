@@ -1,0 +1,5 @@
+metric,best_model,value,better
+log_loss,Logistic Regression,0.42438079254658445,lower
+brier,Logistic Regression,0.13908148932374917,lower
+roc_auc,Extra Trees,0.9024943387429253,higher
+accuracy,Logistic Regression,0.7935266918873476,higher
